@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=400">
+  <title>Samay</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 380px;
+      min-height: 200px;
+      background: #181818;
+      color: #e8e8e8;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Arial, sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #2d1b4e 0%, #1a0e2e 100%);
+      padding: 18px 20px;
+      border-bottom: 1px solid #2a2a3a;
+    }
+    .header h1 {
+      font-size: 20px;
+      font-weight: 300;
+      color: #f0f0f0;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+    .header h1 .accent {
+      color: #c8a8ff;
+      font-weight: 500;
+    }
+    .header-sub {
+      color: #9a8bb8;
+      font-size: 10px;
+      margin-top: 4px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    /* Lock Screen */
+    #lockScreen {
+      padding: 30px 20px;
+      text-align: center;
+    }
+    #lockScreen h2 {
+      font-size: 14px;
+      font-weight: 400;
+      margin-bottom: 16px;
+      color: #aaa;
+      letter-spacing: 0.3px;
+    }
+    #lockScreen input {
+      width: 100%;
+      max-width: 200px;
+      padding: 10px 14px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #222;
+      color: #e8e8e8;
+      font-size: 14px;
+      text-align: center;
+      outline: none;
+      letter-spacing: 4px;
+    }
+    #lockScreen input:focus { border-color: #c8a8ff; }
+    #lockError {
+      color: #f44;
+      font-size: 12px;
+      margin-top: 10px;
+      min-height: 18px;
+    }
+    .lock-btn {
+      margin-top: 14px;
+      padding: 8px 28px;
+      background: #c8a8ff;
+      color: #1a0e2e;
+      border: none;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .lock-btn:hover { background: #d8c0ff; }
+
+    /* Main Content */
+    #mainContent { display: none; }
+
+    /* Today's Stats Card */
+    .stats-card {
+      margin: 16px;
+      padding: 16px;
+      background: #222;
+      border-radius: 12px;
+      border: 1px solid #2a2a2a;
+    }
+    .stats-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #888;
+      margin-bottom: 8px;
+    }
+    .time-display {
+      font-size: 32px;
+      font-weight: 300;
+      color: #f1f1f1;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.5px;
+    }
+    .time-display .separator { color: #555; }
+    .time-display .unit {
+      font-size: 12px;
+      font-weight: 400;
+      color: #888;
+      margin-left: 2px;
+    }
+
+    .progress-container {
+      margin-top: 12px;
+      height: 6px;
+      background: #333;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.5s ease, background 0.3s ease;
+    }
+    .progress-bar.safe { background: #6ec788; }
+    .progress-bar.warning { background: #f4b860; }
+    .progress-bar.danger { background: #e07b7b; }
+
+    .stats-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 11px;
+      color: #888;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .status-badge.active { background: #1a3a2a; color: #6ec788; }
+    .status-badge.blocked { background: #3a1a1a; color: #e07b7b; }
+    .status-badge.disabled { background: #2a2a2a; color: #888; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .status-badge.active .status-dot { background: #6ec788; }
+    .status-badge.blocked .status-dot { background: #e07b7b; }
+    .status-badge.disabled .status-dot { background: #888; }
+
+    /* Video log */
+    .videos-section { margin: 0 16px 16px; }
+    .videos-section h3 {
+      font-size: 10px;
+      font-weight: 600;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .video-item {
+      padding: 8px 10px;
+      background: #1e1e1e;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      border: 1px solid #2a2a2a;
+    }
+    .video-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: #e0e0e0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 320px;
+    }
+    .video-meta {
+      font-size: 10px;
+      color: #888;
+      margin-top: 3px;
+      display: flex;
+      gap: 12px;
+    }
+    .no-videos {
+      color: #555;
+      font-size: 12px;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .settings-section {
+      margin: 0 16px 16px;
+      padding: 16px;
+      background: #222;
+      border-radius: 12px;
+      border: 1px solid #2a2a2a;
+    }
+    .settings-section h3 {
+      font-size: 10px;
+      font-weight: 600;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+    }
+    .setting-row + .setting-row { border-top: 1px solid #2a2a2a; }
+    .setting-label { font-size: 13px; color: #ccc; }
+    .setting-label small {
+      display: block;
+      color: #666;
+      font-size: 10px;
+      margin-top: 2px;
+    }
+
+    input[type="number"] {
+      width: 70px;
+      padding: 6px 10px;
+      border: 1px solid #333;
+      border-radius: 6px;
+      background: #1a1a1a;
+      color: #e8e8e8;
+      font-size: 14px;
+      text-align: center;
+      outline: none;
+    }
+    input[type="number"]:focus { border-color: #c8a8ff; }
+
+    .toggle {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      cursor: pointer;
+    }
+    .toggle input { display: none; }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: #444;
+      border-radius: 11px;
+      transition: background 0.2s;
+    }
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #ccc;
+      top: 3px; left: 3px;
+      transition: transform 0.2s;
+    }
+    .toggle input:checked + .toggle-slider { background: #c8a8ff; }
+    .toggle input:checked + .toggle-slider::before {
+      transform: translateX(18px);
+      background: #fff;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin: 0 16px 16px;
+    }
+    .btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #222;
+      color: #ccc;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .btn:hover { background: #2a2a2a; border-color: #444; }
+    .btn.danger { border-color: #5a2020; color: #f88; }
+    .btn.danger:hover { background: #2a1515; }
+
+    .password-section {
+      margin: 0 16px 16px;
+      padding: 14px;
+      background: #222;
+      border-radius: 12px;
+      border: 1px solid #2a2a2a;
+    }
+    .password-section h3 {
+      font-size: 10px;
+      font-weight: 600;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .password-section input[type="password"] {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #333;
+      border-radius: 6px;
+      background: #1a1a1a;
+      color: #e8e8e8;
+      font-size: 13px;
+      outline: none;
+      margin-bottom: 8px;
+    }
+    .password-section input[type="password"]:focus { border-color: #c8a8ff; }
+    .password-msg {
+      font-size: 11px;
+      margin-top: 4px;
+      min-height: 16px;
+    }
+    .password-msg.success { color: #6ec788; }
+    .password-msg.error { color: #f44; }
+
+    .footer {
+      padding: 10px 16px;
+      text-align: center;
+      font-size: 10px;
+      color: #444;
+      border-top: 1px solid #222;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1><span class="accent">समय</span> · SAMAY</h1>
+    <div class="header-sub">Time tracking for the web</div>
+  </div>
+
+  <div id="lockScreen" style="display: none;">
+    <h2>Enter password to view settings</h2>
+    <input type="password" id="lockPassword" placeholder="••••••" maxlength="20">
+    <div id="lockError"></div>
+    <br>
+    <button class="lock-btn" id="unlockBtn">Unlock</button>
+  </div>
+
+  <div id="mainContent">
+
+    <div class="stats-card">
+      <div class="stats-label">Today's Watch Time</div>
+      <div class="time-display" id="timeDisplay">
+        <span id="timeMinutes">0</span><span class="unit">m</span>
+        <span class="separator"> : </span>
+        <span id="timeSeconds">00</span><span class="unit">s</span>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar safe" id="progressBar" style="width: 0%"></div>
+      </div>
+      <div class="stats-footer">
+        <span id="remainingText">30m remaining</span>
+        <span id="limitText">Limit: 30m</span>
+      </div>
+      <div id="statusBadge" class="status-badge active">
+        <span class="status-dot"></span>
+        <span id="statusText">Tracking</span>
+      </div>
+    </div>
+
+    <div class="videos-section">
+      <h3>Videos Watched Today</h3>
+      <div id="videosList">
+        <div class="no-videos">No videos watched yet today</div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>Settings</h3>
+      <div class="setting-row">
+        <div class="setting-label">
+          Daily Limit (minutes)
+          <small>Time resets at midnight</small>
+        </div>
+        <input type="number" id="limitInput" min="5" max="480" value="30">
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">
+          Enabled
+          <small>Track and enforce limits</small>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="enabledToggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" id="saveBtn">Save Settings</button>
+      <button class="btn danger" id="resetBtn">Reset Today</button>
+    </div>
+
+    <div class="password-section">
+      <h3>🔒 Password Protection</h3>
+      <input type="password" id="newPassword" placeholder="New password (leave empty to remove)">
+      <input type="password" id="confirmPassword" placeholder="Confirm password">
+      <button class="btn" id="setPasswordBtn" style="width:100%; margin-top:4px;">Set Password</button>
+      <div class="password-msg" id="passwordMsg"></div>
+    </div>
+
+    <div class="footer">SAMAY v1.0 · LOCAL DATA ONLY</div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
