@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSV export of usage history
 - Firefox port
 
+## [1.0.1] - 2026-04-29
+
+### Fixed
+- Channel name showing as "Unknown" in the videos-watched-today log. YouTube migrated the channel display from `<ytd-channel-name>` (now hidden and empty on watch pages) to `<yt-attributed-string id="attributed-channel-name">`. Updated content-script selectors to match the new DOM and added a broader fallback chain for resilience against future changes.
+- Stored video metadata is now refreshed by later reports when the first report captured incomplete data. YouTube loads the channel name asynchronously after the video starts, so the first 5-second report often missed it; subsequent reports now backfill it.
+
 ## [1.0.0] - 2026-04-29
 
 ### Added

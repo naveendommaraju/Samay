@@ -122,6 +122,18 @@ async function handleMessage(msg, sender) {
         if (exists) {
           exists.playSeconds += msg.seconds || 0;
           exists.lastSeen = Date.now();
+
+          // Refresh metadata if a later report has better data than what was first captured.
+          // YouTube loads the channel name asynchronously after the video starts, so the
+          // first report often misses it.
+          if (msg.videoInfo.title && msg.videoInfo.title !== 'Unknown'
+              && (!exists.title || exists.title === 'Unknown')) {
+            exists.title = msg.videoInfo.title;
+          }
+          if (msg.videoInfo.channel && msg.videoInfo.channel !== 'Unknown'
+              && (!exists.channel || exists.channel === 'Unknown' || exists.channel === '')) {
+            exists.channel = msg.videoInfo.channel;
+          }
         } else {
           stats.videosWatched.push({
             url: msg.videoInfo.url,

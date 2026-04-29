@@ -169,16 +169,43 @@
   function getVideoInfo() {
     try {
       const url = window.location.href;
+
+      // Title — multiple fallback selectors
       const title = document.querySelector('h1.ytd-watch-metadata yt-formatted-string')?.textContent
+        || document.querySelector('h1.ytd-watch-metadata')?.textContent
         || document.querySelector('#title h1')?.textContent
+        || document.querySelector('ytd-watch-metadata h1')?.textContent
         || document.querySelector('h1.title')?.textContent
         || document.title.replace(' - YouTube', '');
-      const channel = document.querySelector('#channel-name a')?.textContent
+
+      // Channel name lives in one of two containers depending on the video:
+      //   (a) <yt-attributed-string id="attributed-channel-name"> — newer layout
+      //   (b) <ytd-channel-name id="channel-name">                — older layout
+      // YouTube populates exactly one and leaves the other empty/hidden.
+      // We check (a) first, then (b). Both are scoped under #owner so we don't
+      // accidentally match an unrelated <a> elsewhere in #upload-info.
+      const channelText = (
+        document.querySelector('#owner #attributed-channel-name a')?.textContent
+        || document.querySelector('ytd-video-owner-renderer #attributed-channel-name a')?.textContent
+        || document.querySelector('#attributed-channel-name a')?.textContent
+        || document.querySelector('#owner ytd-channel-name #text a')?.textContent
+        || document.querySelector('ytd-video-owner-renderer ytd-channel-name #text a')?.textContent
+        || document.querySelector('ytd-channel-name #text a')?.textContent
+        || document.querySelector('#owner #channel-name a')?.textContent
         || document.querySelector('ytd-channel-name a')?.textContent
-        || '';
-      return { url, title: title?.trim(), channel: channel?.trim() };
+        || ''
+      );
+
+      // Collapse internal whitespace from nested spans (e.g. verified-badge wrappers)
+      const channel = channelText.replace(/\s+/g, ' ').trim();
+
+      return {
+        url,
+        title: (title?.trim()) || 'Unknown',
+        channel: channel || 'Unknown'
+      };
     } catch (_) {
-      return { url: window.location.href, title: document.title, channel: '' };
+      return { url: window.location.href, title: document.title || 'Unknown', channel: 'Unknown' };
     }
   }
 
