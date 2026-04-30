@@ -54,6 +54,20 @@
         blocked = false;
         hideOverlay();
         accumulatedSeconds = 0;
+
+        // Re-find the <video> element in case YouTube's SPA swapped it while
+        // the overlay was up, and reset the play-state so the next tick starts
+        // counting from now (not from a stale lastTickTime).
+        findAndMonitorVideo();
+        const vid = document.querySelector('video.html5-main-video') || document.querySelector('video');
+        if (vid && !vid.paused && !vid.ended) {
+          isPlaying = true;
+          lastTickTime = Date.now();
+          startTicking();
+        } else {
+          isPlaying = false;
+          lastTickTime = null;
+        }
       }
     });
   }
@@ -239,11 +253,35 @@
     overlayElement.id = 'samay-overlay';
     overlayElement.innerHTML = `
       <div class="samay-overlay-inner">
-        <div class="samay-message">Screen time limit reached</div>
+        <div id="samay-owl" class="samay-lottie samay-owl"></div>
+        <div class="samay-message">Showtime's over 🍿<br>Come back tomorrow!</div>
+        <div id="samay-cat" class="samay-lottie samay-cat"></div>
       </div>
     `;
 
     document.body.appendChild(overlayElement);
+
+    if (typeof lottie !== 'undefined') {
+      if (typeof SAMAY_OWL_DATA !== 'undefined') {
+        lottie.loadAnimation({
+          container: overlayElement.querySelector('#samay-owl'),
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+          animationData: JSON.parse(JSON.stringify(SAMAY_OWL_DATA)),
+        });
+      }
+      if (typeof SAMAY_CAT_DATA !== 'undefined') {
+        lottie.loadAnimation({
+          container: overlayElement.querySelector('#samay-cat'),
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+          animationData: JSON.parse(JSON.stringify(SAMAY_CAT_DATA)),
+        });
+      }
+    }
+
     hideYouTubePlayer();
   }
 

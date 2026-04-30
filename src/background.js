@@ -242,7 +242,23 @@ async function handleMessage(msg, sender) {
       if (rc && rc.passwordHash && msg.passwordHash !== rc.passwordHash) {
         return { error: 'Invalid password' };
       }
-      await resetDailyStats();
+
+      // Manual reset clears the time counter so the user can keep watching,
+      // but preserves the videos-watched list (it's a journal of today's
+      // activity, not part of the limit accounting).
+      const { todayStats } = await chrome.storage.local.get('todayStats');
+      const stats = todayStats || {
+        date: getTodayDateStr(),
+        totalPlaySeconds: 0,
+        videosWatched: [],
+        blocked: false,
+      };
+      stats.date = getTodayDateStr();
+      stats.totalPlaySeconds = 0;
+      stats.blocked = false;
+      stats.lastActiveTabId = null;
+      await chrome.storage.local.set({ todayStats: stats });
+
       notifyAllTrackedTabs({ action: 'resetDay' });
       return { status: 'ok' };
     }

@@ -17,7 +17,12 @@
   "content_scripts": [
     {
       "matches": ["*://*.youtube.com/*"],
-      "js": ["src/content/playback-tracker.js"],
+      "js": [
+        "src/overlay/lottie.min.js",
+        "src/overlay/animations/cat.js",
+        "src/overlay/animations/owl.js",
+        "src/content/playback-tracker.js"
+      ],
       "css": ["src/overlay/overlay.css"],
       "run_at": "document_idle"
     }

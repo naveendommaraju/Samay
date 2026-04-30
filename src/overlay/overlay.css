@@ -1,6 +1,6 @@
 /* ============================================================
    Samay — Overlay Styles
-   Clean, minimal "Screen time limit reached" message
+   "Showtime's over" message with Owl + Cat Lottie animations
    ============================================================ */
 
 #samay-overlay {
@@ -18,17 +18,59 @@
 }
 
 .samay-overlay-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
+  justify-content: center;
+  gap: 24px;
   padding: 40px;
+  box-sizing: border-box;
+}
+
+/* Default (narrow): owl flows next to message; no overlap */
+.samay-owl {
+  width: 130px;
+  height: 130px;
+  flex-shrink: 0;
 }
 
 .samay-message {
   color: #f1f1f1;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 400;
+  line-height: 1.5;
   letter-spacing: 0.3px;
-  line-height: 1.4;
+  text-align: center;
+}
+
+.samay-cat {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  width: 120px;
+  height: 120px;
+}
+
+/* Wide screens: owl pins to far left, message stays in true center */
+@media (min-width: 900px) {
+  .samay-owl {
+    position: absolute;
+    left: 48px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 220px;
+    height: 220px;
+  }
+  .samay-message {
+    font-size: 28px;
+    white-space: nowrap;
+  }
+  .samay-cat {
+    width: 200px;
+    height: 200px;
+    bottom: 32px;
+    right: 32px;
+  }
 }

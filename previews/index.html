@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Samay overlay — preview</title>
+<script src="./lottie.min.js"></script>
+<script src="./cat.js"></script>
+<script src="./owl.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #1a1a1a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    color: #f1f1f1;
+  }
+  header {
+    padding: 24px 32px;
+    border-bottom: 1px solid #333;
+  }
+  header h1 { margin: 0 0 4px; font-size: 20px; font-weight: 500; }
+  header p { margin: 0; color: #aaa; font-size: 13px; }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 24px 32px 64px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .card {
+    background: #0f0f0f;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .card-label {
+    padding: 12px 18px;
+    background: #161616;
+    border-bottom: 1px solid #2a2a2a;
+    font-size: 13px;
+    color: #9ca3af;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card-label strong { color: #fff; font-weight: 500; }
+  .card-label button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .stage {
+    background: #0f0f0f;
+    min-height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+  }
+
+  /* Shared message style */
+  .samay-message {
+    color: #f1f1f1;
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  /* ---- Layout A: single animation above message ---- */
+  .layout-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .layout-stack .lottie-box { width: 240px; height: 240px; }
+
+  /* ---- Layout C: two animations side-by-side, message below ---- */
+  .layout-duo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .layout-duo .row {
+    display: flex;
+    gap: 24px;
+    align-items: flex-end;
+  }
+  .layout-duo .lottie-box { width: 200px; height: 200px; }
+
+  /* ---- Layout D: owl left, message center, cat right (one row) ---- */
+  .layout-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+  }
+  .layout-row .lottie-box { width: 180px; height: 180px; }
+  .layout-row .samay-message { max-width: 280px; }
+
+  /* ---- Layout H: three-panel — owl left, message center (2 lines), cat right ---- */
+  .layout-h {
+    position: relative;
+    width: 100%;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+  }
+  /* Default (narrow): owl sits next to message in flow */
+  .layout-h .lottie-owl {
+    width: 130px;
+    height: 130px;
+    flex-shrink: 0;
+  }
+  .layout-h .samay-message {
+    line-height: 1.5;
+    font-size: 20px;
+  }
+  .layout-h .lottie-cat {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 120px;
+    height: 120px;
+  }
+  /* Wide screens: owl pins to left edge, message stays in true center */
+  @media (min-width: 900px) {
+    .layout-h .lottie-owl {
+      position: absolute;
+      left: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 200px;
+      height: 200px;
+    }
+    .layout-h .samay-message {
+      font-size: 26px;
+      white-space: nowrap;
+    }
+    .layout-h .lottie-cat {
+      width: 180px;
+      height: 180px;
+    }
+  }
+
+  /* ---- Layout G: owl + message centered, cat in bottom-right corner ---- */
+  .layout-g {
+    position: relative;
+    width: 100%;
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .layout-g .center {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+  .layout-g .lottie-owl { width: 180px; height: 180px; }
+  .layout-g .samay-message { max-width: 320px; text-align: left; }
+  .layout-g .lottie-cat {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 160px;
+    height: 160px;
+  }
+
+  /* ---- Layout E: animation top-left corner, message centered ---- */
+  .layout-corner {
+    position: relative;
+    width: 100%;
+    min-height: 340px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .layout-corner .lottie-box {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 160px;
+    height: 160px;
+  }
+  .layout-corner .lottie-box.bottom-left {
+    top: auto;
+    right: auto;
+    bottom: 0;
+    left: 0;
+  }
+
+  .lottie-box { display: block; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Samay overlay — Lottie layout previews</h1>
+  <p>Message: "Showtime's over 🍿 Come back tomorrow!" — pick the layout you like best.</p>
+</header>
+
+<div class="grid">
+
+  <!-- A: Cat only -->
+  <div class="card">
+    <div class="card-label"><strong>A — Cat only, stacked</strong><span>animation above message</span></div>
+    <div class="stage">
+      <div class="layout-stack">
+        <div id="a-cat" class="lottie-box"></div>
+        <div class="samay-message">Showtime's over 🍿 Come back tomorrow!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B: Owl only -->
+  <div class="card">
+    <div class="card-label"><strong>B — Owl only, stacked</strong><span>animation above message</span></div>
+    <div class="stage">
+      <div class="layout-stack">
+        <div id="b-owl" class="lottie-box"></div>
+        <div class="samay-message">Showtime's over 🍿 Come back tomorrow!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C: Both, side-by-side, message below -->
+  <div class="card">
+    <div class="card-label"><strong>C — Both side-by-side</strong><span>cat + owl above message</span></div>
+    <div class="stage">
+      <div class="layout-duo">
+        <div class="row">
+          <div id="c-cat" class="lottie-box"></div>
+          <div id="c-owl" class="lottie-box"></div>
+        </div>
+        <div class="samay-message">Showtime's over 🍿 Come back tomorrow!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D: Owl left — message — cat right -->
+  <div class="card">
+    <div class="card-label"><strong>D — Flanking row</strong><span>owl · message · cat</span></div>
+    <div class="stage">
+      <div class="layout-row">
+        <div id="d-owl" class="lottie-box"></div>
+        <div class="samay-message">Showtime's over 🍿 Come back tomorrow!</div>
+        <div id="d-cat" class="lottie-box"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- E: Random (cat or owl) -->
+  <div class="card">
+    <div class="card-label">
+      <strong>E — Random pick</strong>
+      <button onclick="rerollE()">🎲 Reroll</button>
+    </div>
+    <div class="stage">
+      <div class="layout-stack">
+        <div id="e-anim" class="lottie-box"></div>
+        <div class="samay-message">Showtime's over 🍿 Come back tomorrow!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- H: Three panels — owl | message | cat -->
+  <div class="card">
+    <div class="card-label"><strong>H — Three panels</strong><span>owl left · message center (2 lines) · cat right</span></div>
+    <div class="stage">
+      <div class="layout-h">
+        <div id="h-owl" class="lottie-box lottie-owl"></div>
+        <div class="samay-message">Showtime's over 🍿<br>Come back tomorrow!</div>
+        <div id="h-cat" class="lottie-box lottie-cat"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- G: Owl + message center, cat bottom-right corner -->
+  <div class="card">
+    <div class="card-label"><strong>G — Owl + message center, cat in bottom-right</strong><span>D + F hybrid</span></div>
+    <div class="stage">
+      <div class="layout-g">
+        <div class="center">
+          <div id="g-owl" class="lottie-box lottie-owl"></div>
+          <div class="samay-message">Showtime's over 🍿 Come back tomorrow!</div>
+        </div>
+        <div id="g-cat" class="lottie-box lottie-cat"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- F: Corner animation -->
+  <div class="card">
+    <div class="card-label"><strong>F — Corner accent</strong><span>cat in corner, message centered</span></div>
+    <div class="stage">
+      <div class="layout-corner">
+        <div class="samay-message">Showtime's over 🍿 Come back tomorrow!</div>
+        <div id="f-cat" class="lottie-box bottom-left"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const CAT = window.CAT_DATA;
+  const OWL = window.OWL_DATA;
+
+  function load(id, animationData) {
+    return lottie.loadAnimation({
+      container: document.getElementById(id),
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      animationData: JSON.parse(JSON.stringify(animationData)),
+    });
+  }
+
+  load('a-cat', CAT);
+  load('b-owl', OWL);
+  load('c-cat', CAT);
+  load('c-owl', OWL);
+  load('d-cat', CAT);
+  load('d-owl', OWL);
+  load('f-cat', CAT);
+  load('g-owl', OWL);
+  load('g-cat', CAT);
+  load('h-owl', OWL);
+  load('h-cat', CAT);
+
+  let eAnim = null;
+  function rerollE() {
+    if (eAnim) eAnim.destroy();
+    const path = Math.random() < 0.5 ? CAT : OWL;
+    eAnim = load('e-anim', path);
+  }
+  rerollE();
+</script>
+</body>
+</html>
